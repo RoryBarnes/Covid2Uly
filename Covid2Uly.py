@@ -15,8 +15,9 @@ iNumDays=iNumCols-4
 
 print("There are "+repr(iNumDays)+" days of data.")
 
-iaDay = [0 for i in range(iNumDays)]
+iaDay = [i for i in range(iNumDays)]
 
+"""
 for iDay in range(iNumDays):
     #print(saWords[iDay+4])
     saDate=saHeader[iDay+4].split("/")
@@ -25,6 +26,7 @@ for iDay in range(iNumDays):
     if int(saDate[1]) < 10:
         saDate[1] = "0"+saDate[1]
     iaDay[iDay] = int(saDate[2]+saDate[0]+saDate[1])
+"""
 
 # Find number of countries
 iLine=0
@@ -57,24 +59,21 @@ for saLine in csvData:
 print('Total number of countries: '+repr(iNumCountries))
 
 saCountry = ["" for i in range(iNumCountries)]
+iaCountry = [0 for i in range(iNumCountries)]
+iaMaxConfirmed = [0 for i in range(iNumCountries)]
 iaConfirmed = [[0 for i in range(iNumDays)] for j in range(iNumCountries)]
+iaConfirmedDaily = [[0 for i in range(iNumDays)] for j in range(iNumCountries)]
 
 for iCountry in range(iNumCountries):
     saCountry[iCountry] = saCountryTmp[iCountry]
 
 
-# Now must rest to read in cases and create proper matrix
+# Now must reset to read in cases and create proper matrix
 csvData = csv.reader(open("time_series_19-covid-Confirmed.csv","r"))
 saHeader = next(csvData)
 
-#csvData.seek(0)
-#saHeader = next(csvData)
-print(saHeader[0])
-
 iLine=0
 iCountry = 0
-iaCountry = [0 for i in range(iNumCountries)]
-saCountry = ["" for i in range(iNumCountries)]
 for saLine in csvData:
     #print(saLine)
     bMatch = 0 # Assume the row is a new country
@@ -91,10 +90,6 @@ for saLine in csvData:
             iCountryNow = iaCountry[jLine]
             jLine = iNumCountries # break out of loop
 
-    # After for loop
-    #if bMatch == 1:
-
-
     if bMatch == 0:
         #print(repr(iNumCountries))
         saCountry[iCountry] = sCountry
@@ -108,18 +103,43 @@ for saLine in csvData:
 
     for iDay in range(iNumDays):
         iaConfirmed[iCountryNow][iDay] += int(saLine[iDay+4])
-        #print(repr(iaCountry[iCountry-1])+','+repr(iaDay[iDay])+','+repr(iaConfirmed[iCountry-1][iDay])+','+saCountry[iCountry-1])
+        #if iaConfirmed[iCountryNow][iDay] > iaMaxConfirmed[iCountryNow]:
+        #    iaMaxConfirmed[iCountryNow] = iaConfirmed[iCountryNow][iDay]
+        if iDay > 0:
+            iaConfirmedDaily[iCountryNow][iDay] =  iaConfirmed[iCountryNow][iDay] - iaConfirmed[iCountryNow][iDay-1]
+        else:
+            iaConfirmedDaily[iCountryNow][iDay] = iaConfirmed[iCountryNow][iDay]
+        if iaConfirmedDaily[iCountryNow][iDay] < 0:
+            iaConfirmedDaily[iCountryNow][iDay] = 0
+
     iLine += 1
 
-sOutLine=',Country ID,Date,Confirmed Cases,#Country\n'
+#print("Country\tMaxC")
+#for iCountry in range(iNumCountries):
+
+# Now rank countries by total number of infections
+iaWorst = [0 for i in range(iNumCountries)]
+
+for iCountry in range(iNumCountries):
+    iaWorst[iCountry] = iaConfirmed[iCountry][iNumDays-1]
+    #print(saCountry[iCountry]+'\t'+repr(iaWorst[iCountry]))
+
+iaWorst.sort(reverse=True)
+print(repr(iaWorst[24]))
+#for iCountry in range(iNumCountries):
+    #iaWorst[iCountry] = iaConfirmed[iCountry][iNumDays-1]
+    #print(saCountry[iCountry]+'\t'+repr(iaWorst[iCountry]))
+
+
+sOutLine=',Country ID,Days Since 22 Jan,Cumulative Cases,New Cases,#Country,NULL\n'
 UlyFile.write(sOutLine)
 
 iLine=0
 for iCountry in range(iNumCountries):
     for iDay in range(iNumDays):
         iLine += 1
-        sOutLine=repr(iLine)+','+repr(iaCountry[iCountry])+','+repr(iaDay[iDay])+','+repr(iaConfirmed[iCountry][iDay])+','+saCountry[iCountry]+'\n'
-
-        UlyFile.write(sOutLine)
+        if iaConfirmed[iCountry][iNumDays-1] >= iaWorst[24]:
+            sOutLine=repr(iLine)+','+repr(iaCountry[iCountry])+','+repr(iaDay[iDay])+','+repr(iaConfirmed[iCountry][iDay])+','+repr(iaConfirmedDaily[iCountry][iDay])+','+saCountry[iCountry]+',-1\n'
+            UlyFile.write(sOutLine)
 
         #exit()
