@@ -1,137 +1,137 @@
-COUNTRY,	POPULATION
-Thailand,	69037513
-Japan,	126860301
-Singapore,	5804337
-Nepal,	28608710
-Malaysia,	31949777
-Australia,	25203198
-Cambodia,	16486542
-Sri Lanka,	21323733
-Germany,	83517045
-Finland,	5532156
-United Arab Emirates,	9770529
-Philippines,	108116615
-India,	1352642280
-Italy,	60550075
-Sweden,	10036379
-Spain,	46736776
-Cruise Ship,	3177
-Lebanon,	6855713
-Iraq,	39309783
-Oman,	497498
-Afghanistan,	38041754
-Bahrain,	1641172
-Kuwait,	4207083
-Algeria,	43053054
-Croatia,	4130304
-Switzerland,	8591365
-Austria,	8955102
-Israel,	8519377
-Pakistan,	216565318
-Brazil,	211049527
-Georgia,	3996765
-Greece,	10473455
-North Macedonia,	2083459
-Norway,	5378857
-Romania,	19364557
-Estonia,	1325648
-San Marino,	33860
-Belarus,	9452411
-Iceland,	339031
-Lithuania,	2759627
-Mexico,	127575529
-New Zealand,	4783063
-Nigeria,	200963599
-Ireland,	4882495
-Luxembourg,	615729
-Monaco,	38964
-Qatar,	2832067
-Ecuador,	17373662
-Azerbaijan,	10047718
-Armenia,	2957731
-Dominican Republic,	10738958
-Indonesia,	270625568
-Portugal,	10226187
-Andorra,	77142
-Latvia,	1906743
-Morocco,	36471769
-Saudi Arabia,	34268528
-Senegal,	16296364
-Argentina,	44,780,677
-Chile,	18952038
-Jordan,	10101694
-Ukraine,	43993638
-Hungary,	9684679
-Liechtenstein,	38019
-Poland,	37887768
-Bosnia and Herzegovina,	3301000
-Slovenia,	2078654
-South Africa,	58558270
-Bhutan,	763092
-Cameroon,	25876380
-Colombia,	50339443
-Costa Rica,	5047561
-Peru,	32510453
-Serbia,	8772235
-Slovakia,	5457013
-Togo,	8082366
-Malta,	440372
-Martinique,	375554
-Bulgaria,	7000119
-Maldives,	530953
-Bangladesh,	163046161
-Paraguay,	7044636
-Canada,	37411047
-Albania,	2880917
-Cyprus,	1179551
-US,	329064917
-Burkina Faso,	20321378
-Brunei,	433285
-Holy See,	799
-Mongolia,	3225167
-Panama,	4246439
-China,	1433783686
-Iran,	82913906
-"Korea, South",	51225308
-France,	65129728
-Denmark,	5771876
-Czechia,	10689209
-Taiwan,	23773876
-Vietnam,	96462106
-Russia,	145872256
-Moldova,	4043263
-Bolivia,	11513100
-Honduras,	9746117
-United Kingdom,	67530172
-Congo (Brazzaville),	5380508
-Cote d'Ivoire,	25716544
-Jamaica,	2948279
-Turkey,	8429615
-Central African Republic,	4745185
-Equatorial Guinea,	1355986
-Uzbekistan,	32981716
-Netherlands,	17097130
-Benin,	11801151
-Liberia,	4937374
-Somalia,	15442905
-Tanzania,	58005463
-Barbados,	287025
-Montenegro,	627987
-Kyrgyzstan,	6415850
-Mauritius,	1198575
-Zambia,	17861030
-Djibouti,	973560
-"Gambia, The",	2347706
-"Bahamas, The",	389482
-Chad,	389482
-El Salvador,	6453553
-Fiji,	889953
-Nicaragua,	6545502
-Madagascar,	26969307
-Haiti,	11263770
-Angola,	31825295
-Cabo Verde,	54935
-Niger,	23310715
-Papua New Guinea,	8776109
-Zimbabwe,	14645468
-Congo (Kinshasa),	86790567
+COUNTRY,POPULATION
+Thailand,69037513
+Japan,126860301
+Singapore,5804337
+Nepal,28608710
+Malaysia,31949777
+Australia,25203198
+Cambodia,16486542
+Sri Lanka,21323733
+Germany,83517045
+Finland,5532156
+United Arab Emirates,9770529
+Philippines,108116615
+India,1352642280
+Italy,60550075
+Sweden,10036379
+Spain,46736776
+Cruise Ship,3177
+Lebanon,6855713
+Iraq,39309783
+Oman,497498
+Afghanistan,38041754
+Bahrain,1641172
+Kuwait,4207083
+Algeria,43053054
+Croatia,4130304
+Switzerland,8591365
+Austria,8955102
+Israel,8519377
+Pakistan,216565318
+Brazil,211049527
+Georgia,3996765
+Greece,10473455
+North Macedonia,2083459
+Norway,5378857
+Romania,19364557
+Estonia,1325648
+San Marino,33860
+Belarus,9452411
+Iceland,339031
+Lithuania,2759627
+Mexico,127575529
+New Zealand,4783063
+Nigeria,200963599
+Ireland,4882495
+Luxembourg,615729
+Monaco,38964
+Qatar,2832067
+Ecuador,17373662
+Azerbaijan,10047718
+Armenia,2957731
+Dominican Republic,10738958
+Indonesia,270625568
+Portugal,10226187
+Andorra,77142
+Latvia,1906743
+Morocco,36471769
+Saudi Arabia,34268528
+Senegal,16296364
+Argentina,44,780,677
+Chile,18952038
+Jordan,10101694
+Ukraine,43993638
+Hungary,9684679
+Liechtenstein,38019
+Poland,37887768
+Bosnia and Herzegovina,3301000
+Slovenia,2078654
+South Africa,58558270
+Bhutan,763092
+Cameroon,25876380
+Colombia,50339443
+Costa Rica,5047561
+Peru,32510453
+Serbia,8772235
+Slovakia,5457013
+Togo,8082366
+Malta,440372
+Martinique,375554
+Bulgaria,7000119
+Maldives,530953
+Bangladesh,163046161
+Paraguay,7044636
+Canada,37411047
+Albania,2880917
+Cyprus,1179551
+US,329064917
+Burkina Faso,20321378
+Brunei,433285
+Holy See,799
+Mongolia,3225167
+Panama,4246439
+China,1433783686
+Iran,82913906
+"Korea, South",51225308
+France,65129728
+Denmark,5771876
+Czechia,10689209
+Taiwan,23773876
+Vietnam,96462106
+Russia,145872256
+Moldova,4043263
+Bolivia,11513100
+Honduras,9746117
+United Kingdom,67530172
+Congo (Brazzaville),5380508
+Cote d'Ivoire,25716544
+Jamaica,2948279
+Turkey,8429615
+Central African Republic,4745185
+Equatorial Guinea,1355986
+Uzbekistan,32981716
+Netherlands,17097130
+Benin,11801151
+Liberia,4937374
+Somalia,15442905
+Tanzania,58005463
+Barbados,287025
+Montenegro,627987
+Kyrgyzstan,6415850
+Mauritius,1198575
+Zambia,17861030
+Djibouti,973560
+"Gambia, The",2347706
+"Bahamas, The",389482
+Chad,389482
+El Salvador,6453553
+Fiji,889953
+Nicaragua,6545502
+Madagascar,26969307
+Haiti,11263770
+Angola,31825295
+Cabo Verde,54935
+Niger,23310715
+Papua New Guinea,8776109
+Zimbabwe,14645468
+Congo (Kinshasa),86790567
