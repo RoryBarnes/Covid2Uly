@@ -130,7 +130,7 @@ for saLine in csvData:
         if saCountry[iCountry]==sCountry:
             iaPopulation[iCountry]=iPop
             for iDay in range (iNumDays):
-                iaCasesCapita[iCountry][iDay]=iaConfirmed[iCountry][iDay]/iaPopulation[iCountry]
+                iaCasesCapita[iCountry][iDay]=iaConfirmed[iCountry][iDay]/iaPopulation[iCountry]*1e6
 
 # Now rank countries by total number of infections
 iaWorst = [0 for i in range(iNumCountries)]
@@ -146,15 +146,19 @@ print(repr(iaWorst[24]))
     #print(saCountry[iCountry]+'\t'+repr(iaWorst[iCountry]))
 
 
-sOutLine=',Country ID,Days Since 22 Jan,Cumulative Cases,New Cases,Cases per Capita,Population,#Country,NULL\n'
+sOutLine=',Country ID,Days Since 22 Jan,Cumulative Cases,New Cases,Cases per Million,Population,#Country,NULL\n'
 UlyFile.write(sOutLine)
 
 iLine=0
+iCountryID = 0
 for iCountry in range(iNumCountries):
-    for iDay in range(iNumDays):
-        iLine += 1
-        if iaConfirmed[iCountry][iNumDays-1] >= iaWorst[24]:
+    if saCountry[iCountry] == "Korea, South":
+        saCountry[iCountry] = "South Korea"
+    if iaConfirmed[iCountry][iNumDays-1] >= iaWorst[24]:
+        for iDay in range(iNumDays):
             sOutLine=repr(iLine)+','+repr(iaCountry[iCountry])+','+repr(iaDay[iDay])+','+repr(iaConfirmed[iCountry][iDay])+','+repr(iaConfirmedDaily[iCountry][iDay])+','+repr(iaCasesCapita[iCountry][iDay])+','+repr(iaPopulation[iCountry])+','+saCountry[iCountry]+',-1\n'
             UlyFile.write(sOutLine)
+            iLine += 1
 
+        iCountryID += 1
         #exit()
