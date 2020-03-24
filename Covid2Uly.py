@@ -5,6 +5,7 @@ import csv
 
 SourceFile="time_series_covid19_confirmed_global.csv"
 UlyFile=open("covid-19.uly","w")
+PopFile=open("PopulationData.csv","r")
 
 csvData = csv.reader(open(SourceFile,"r"))
 saHeader = next(csvData)
@@ -63,6 +64,8 @@ iaCountry = [0 for i in range(iNumCountries)]
 iaMaxConfirmed = [0 for i in range(iNumCountries)]
 iaConfirmed = [[0 for i in range(iNumDays)] for j in range(iNumCountries)]
 iaConfirmedDaily = [[0 for i in range(iNumDays)] for j in range(iNumCountries)]
+iaPopulation = [0 for i in range(iNumCountries)]
+iaCasesCapita = [[0 for i in range(iNumDays)] for j in range(iNumCountries)]
 
 for iCountry in range(iNumCountries):
     saCountry[iCountry] = saCountryTmp[iCountry]
@@ -118,6 +121,18 @@ for saLine in csvData:
 #print("Country\tMaxC")
 #for iCountry in range(iNumCountries):
 
+csvData = csv.reader(PopFile)
+saHeader = next(csvData)
+print(saHeader[0])
+for saLine in csvData:
+    sCountry=saLine[0]
+    iPop=int(saLine[1])
+    for iCountry in range (iNumCountries):
+        if saCountry[iCountry]==sCountry:
+            iaPopulation[iCountry]=iPop
+            for iDay in range (iNumDays):
+                iaCasesCapita[iCountry][iDay]=iaConfirmed[iCountry][iDay]/iaPopulation[iCountry]*1e6
+
 # Now rank countries by total number of infections
 iaWorst = [0 for i in range(iNumCountries)]
 
@@ -132,18 +147,17 @@ print(repr(iaWorst[24]))
     #print(saCountry[iCountry]+'\t'+repr(iaWorst[iCountry]))
 
 
-sOutLine=',Country ID,Days Since 22 Jan,Cumulative Cases,New Cases,#Country,NULL\n'
+sOutLine=',Country ID,Days Since 22 Jan,Cumulative Cases,New Cases,Cases per Million,Population,#Country,NULL\n'
 UlyFile.write(sOutLine)
 
 iLine=0
 iCountryID = 0
 for iCountry in range(iNumCountries):
-    iFound = 0
     if saCountry[iCountry] == "Korea, South":
         saCountry[iCountry] = "South Korea"
     if iaConfirmed[iCountry][iNumDays-1] >= iaWorst[24]:
         for iDay in range(iNumDays):
-            sOutLine=repr(iLine)+','+repr(iCountryID)+','+repr(iaDay[iDay])+','+repr(iaConfirmed[iCountry][iDay])+','+repr(iaConfirmedDaily[iCountry][iDay])+','+saCountry[iCountry]+',-1\n'
+            sOutLine=repr(iLine)+','+repr(iaCountry[iCountry])+','+repr(iaDay[iDay])+','+repr(iaConfirmed[iCountry][iDay])+','+repr(iaConfirmedDaily[iCountry][iDay])+','+repr(iaCasesCapita[iCountry][iDay])+','+repr(iaPopulation[iCountry])+','+saCountry[iCountry]+',-1\n'
             UlyFile.write(sOutLine)
             iLine += 1
 
