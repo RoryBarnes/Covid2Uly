@@ -3,10 +3,10 @@ import string as str
 import subprocess as subp
 import csv
 
-SourceFile=open("time_series_19-covid-Confirmed.csv","r")
+SourceFile="time_series_covid19_confirmed_global.csv"
 UlyFile=open("covid-19.uly","w")
 
-csvData = csv.reader(open("time_series_19-covid-Confirmed.csv","r"))
+csvData = csv.reader(open(SourceFile,"r"))
 saHeader = next(csvData)
 #print(saHeader[0])
 
@@ -69,7 +69,7 @@ for iCountry in range(iNumCountries):
 
 
 # Now must reset to read in cases and create proper matrix
-csvData = csv.reader(open("time_series_19-covid-Confirmed.csv","r"))
+csvData = csv.reader(open(SourceFile,"r"))
 saHeader = next(csvData)
 
 iLine=0
@@ -102,6 +102,7 @@ for saLine in csvData:
 
 
     for iDay in range(iNumDays):
+        print(sCountry,repr(iDay),saLine[iDay+4])
         iaConfirmed[iCountryNow][iDay] += int(saLine[iDay+4])
         #if iaConfirmed[iCountryNow][iDay] > iaMaxConfirmed[iCountryNow]:
         #    iaMaxConfirmed[iCountryNow] = iaConfirmed[iCountryNow][iDay]
