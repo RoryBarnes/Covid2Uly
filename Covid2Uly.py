@@ -64,6 +64,8 @@ iaCountry = [0 for i in range(iNumCountries)]
 iaMaxConfirmed = [0 for i in range(iNumCountries)]
 iaConfirmed = [[0 for i in range(iNumDays)] for j in range(iNumCountries)]
 iaConfirmedDaily = [[0 for i in range(iNumDays)] for j in range(iNumCountries)]
+iaPopulation = [0 for i in range(iNumCountries)]
+iaCasesCapita = [[0 for i in range(iNumDays)] for j in range(iNumCountries)]
 
 for iCountry in range(iNumCountries):
     saCountry[iCountry] = saCountryTmp[iCountry]
@@ -117,6 +119,18 @@ for saLine in csvData:
 
 #print("Country\tMaxC")
 #for iCountry in range(iNumCountries):
+
+csvData = csv.reader(PopFile)
+saHeader = next(csvData)
+print(saHeader[0])
+for saLine in csvData:
+    sCountry=saLine[0]
+    iPop=int(saLine[1])
+    for iCountry in range (iNumCountries):
+        if saCountry[iCountry]==sCountry:
+            iaPopulation[iCountry]=iPop
+            for iDay in range (iNumDays):
+                iaCasesCapita[iCountry][iDay]=iaConfirmed[iCountry][iDay]/iaPopulation[iCountry]
 
 # Now rank countries by total number of infections
 iaWorst = [0 for i in range(iNumCountries)]
