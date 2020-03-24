@@ -5,6 +5,7 @@ import csv
 
 SourceFile=open("time_series_19-covid-Confirmed.csv","r")
 UlyFile=open("covid-19.uly","w")
+PopFile=open("PopulationData.csv","r")
 
 csvData = csv.reader(open("time_series_19-covid-Confirmed.csv","r"))
 saHeader = next(csvData)
@@ -131,7 +132,7 @@ print(repr(iaWorst[24]))
     #print(saCountry[iCountry]+'\t'+repr(iaWorst[iCountry]))
 
 
-sOutLine=',Country ID,Days Since 22 Jan,Cumulative Cases,New Cases,#Country,NULL\n'
+sOutLine=',Country ID,Days Since 22 Jan,Cumulative Cases,New Cases,Cases per Capita,Population,#Country,NULL\n'
 UlyFile.write(sOutLine)
 
 iLine=0
@@ -139,7 +140,7 @@ for iCountry in range(iNumCountries):
     for iDay in range(iNumDays):
         iLine += 1
         if iaConfirmed[iCountry][iNumDays-1] >= iaWorst[24]:
-            sOutLine=repr(iLine)+','+repr(iaCountry[iCountry])+','+repr(iaDay[iDay])+','+repr(iaConfirmed[iCountry][iDay])+','+repr(iaConfirmedDaily[iCountry][iDay])+','+saCountry[iCountry]+',-1\n'
+            sOutLine=repr(iLine)+','+repr(iaCountry[iCountry])+','+repr(iaDay[iDay])+','+repr(iaConfirmed[iCountry][iDay])+','+repr(iaConfirmedDaily[iCountry][iDay])+','+repr(iaCasesCapita[iCountry][iDay])+','+repr(iaPopulation[iCountry])+','+saCountry[iCountry]+',-1\n'
             UlyFile.write(sOutLine)
 
         #exit()
