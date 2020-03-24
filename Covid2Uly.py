@@ -135,11 +135,16 @@ sOutLine=',Country ID,Days Since 22 Jan,Cumulative Cases,New Cases,#Country,NULL
 UlyFile.write(sOutLine)
 
 iLine=0
+iCountryID = 0
 for iCountry in range(iNumCountries):
-    for iDay in range(iNumDays):
-        iLine += 1
-        if iaConfirmed[iCountry][iNumDays-1] >= iaWorst[24]:
-            sOutLine=repr(iLine)+','+repr(iaCountry[iCountry])+','+repr(iaDay[iDay])+','+repr(iaConfirmed[iCountry][iDay])+','+repr(iaConfirmedDaily[iCountry][iDay])+','+saCountry[iCountry]+',-1\n'
+    iFound = 0
+    if saCountry[iCountry] == "Korea, South":
+        saCountry[iCountry] = "South Korea"
+    if iaConfirmed[iCountry][iNumDays-1] >= iaWorst[24]:
+        for iDay in range(iNumDays):
+            sOutLine=repr(iLine)+','+repr(iCountryID)+','+repr(iaDay[iDay])+','+repr(iaConfirmed[iCountry][iDay])+','+repr(iaConfirmedDaily[iCountry][iDay])+','+saCountry[iCountry]+',-1\n'
             UlyFile.write(sOutLine)
+            iLine += 1
 
+        iCountryID += 1
         #exit()
