@@ -2,12 +2,19 @@ import numpy as np
 import string as str
 import subprocess as subp
 import csv
+import subprocess as subp
 
-SourceFile="time_series_covid19_confirmed_global.csv"
+sCSSEDir="/Users/rory/DataViz/Ulysses/covid19/COVID-19/"
+sSourceFile=sCSSEDir+"csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
 UlyFile=open("covid-19.uly","w")
 PopFile=open("PopulationData.csv","r")
 
-csvData = csv.reader(open(SourceFile,"r"))
+# Get latest data
+sCmd = 'cd '+sCSSEDir+'; git pull origin master >& gitlog'
+#print (sCmd)
+subp.call(sCmd, shell=True)
+
+csvData = csv.reader(open(sSourceFile,"r"))
 saHeader = next(csvData)
 #print(saHeader[0])
 
@@ -17,17 +24,46 @@ iNumDays=iNumCols-4
 print("There are "+repr(iNumDays)+" days of data.")
 
 iaDay = [i for i in range(iNumDays)]
+saDate = ["" for i in range(iNumDays)]
 
-"""
+# Get date
 for iDay in range(iNumDays):
     #print(saWords[iDay+4])
-    saDate=saHeader[iDay+4].split("/")
-    if int(saDate[0]) < 10:
-        saDate[0] = "0"+saDate[0]
-    if int(saDate[1]) < 10:
-        saDate[1] = "0"+saDate[1]
-    iaDay[iDay] = int(saDate[2]+saDate[0]+saDate[1])
-"""
+    saDateTmp=saHeader[iDay+4].split("/")
+
+    saDate[iDay] = saDateTmp[1]+' '
+
+    if saDateTmp[0] == "1":
+        saDate[iDay] += "Jan"
+    if saDateTmp[0] == "2":
+        saDate[iDay] += "Feb"
+    if saDateTmp[0] == "3":
+        saDate[iDay] += "Mar"
+    if saDateTmp[0] == "4":
+        saDate[iDay] += "Apr"
+    if saDateTmp[0] == "5":
+        saDate[iDay] += "May"
+    if saDateTmp[0] == "6":
+        saDate[iDay] += "Jun"
+    if saDateTmp[0] == "7":
+        saDate[iDay] += "Jul"
+    if saDateTmp[0] == "8":
+        saDate[iDay] += "Aug"
+    if saDateTmp[0] == "9":
+        saDate[iDay] += "Sep"
+    if saDateTmp[0] == "10":
+        saDate[iDay] += "Oct"
+    if saDateTmp[0] == "11":
+        saDate[iDay] += "Nov"
+    if saDateTmp[0] == "12":
+        saDate[iDay] += "JDec"
+
+    saDate[iDay] += " 2020"
+
+sToday = saDate[iNumDays-1].replace(' ','')
+#sOutFileName =
+UlyFile=open('covid19-'+sToday+'.uly',"w")
+#print (sToday)
 
 # Find number of countries
 iLine=0
@@ -72,7 +108,7 @@ for iCountry in range(iNumCountries):
 
 
 # Now must reset to read in cases and create proper matrix
-csvData = csv.reader(open(SourceFile,"r"))
+csvData = csv.reader(open(sSourceFile,"r"))
 saHeader = next(csvData)
 
 iLine=0
@@ -105,7 +141,7 @@ for saLine in csvData:
 
 
     for iDay in range(iNumDays):
-        print(sCountry,repr(iDay),saLine[iDay+4])
+        #print(sCountry,repr(iDay),saLine[iDay+4])
         iaConfirmed[iCountryNow][iDay] += int(saLine[iDay+4])
         #if iaConfirmed[iCountryNow][iDay] > iaMaxConfirmed[iCountryNow]:
         #    iaMaxConfirmed[iCountryNow] = iaConfirmed[iCountryNow][iDay]
@@ -123,7 +159,7 @@ for saLine in csvData:
 
 csvData = csv.reader(PopFile)
 saHeader = next(csvData)
-print(saHeader[0])
+#print(saHeader[0])
 for saLine in csvData:
     sCountry=saLine[0]
     iPop=int(saLine[1])
@@ -141,13 +177,13 @@ for iCountry in range(iNumCountries):
     #print(saCountry[iCountry]+'\t'+repr(iaWorst[iCountry]))
 
 iaWorst.sort(reverse=True)
-print(repr(iaWorst[24]))
+#print(repr(iaWorst[24]))
 #for iCountry in range(iNumCountries):
     #iaWorst[iCountry] = iaConfirmed[iCountry][iNumDays-1]
     #print(saCountry[iCountry]+'\t'+repr(iaWorst[iCountry]))
 
 
-sOutLine=',Country ID,Days Since 22 Jan,Cumulative Cases,New Cases,Cases per Million,Population,#Country,NULL\n'
+sOutLine=',Country ID,Days Since 22 Jan,Cumulative Cases,New Cases,Cases per Million,Population,#Country,#Date,NULL\n'
 UlyFile.write(sOutLine)
 
 iLine=0
@@ -157,9 +193,12 @@ for iCountry in range(iNumCountries):
         saCountry[iCountry] = "South Korea"
     if iaConfirmed[iCountry][iNumDays-1] >= iaWorst[24]:
         for iDay in range(iNumDays):
-            sOutLine=repr(iLine)+','+repr(iaCountry[iCountry])+','+repr(iaDay[iDay])+','+repr(iaConfirmed[iCountry][iDay])+','+repr(iaConfirmedDaily[iCountry][iDay])+','+repr(iaCasesCapita[iCountry][iDay])+','+repr(iaPopulation[iCountry])+','+saCountry[iCountry]+',-1\n'
+            sOutLine=repr(iLine)+','+repr(iCountryID)+','+repr(iaDay[iDay])+','+repr(iaConfirmed[iCountry][iDay])
+            sOutLine += ','+repr(iaConfirmedDaily[iCountry][iDay])+','+repr(iaCasesCapita[iCountry][iDay])
+            sOutLine += ','+repr(iaPopulation[iCountry])+','+saCountry[iCountry]+','+saDate[iDay]+',-1\n'
             UlyFile.write(sOutLine)
             iLine += 1
 
+        #print(repr(iCountryID))
         iCountryID += 1
         #exit()
