@@ -5,7 +5,8 @@ import csv
 import subprocess as subp
 
 sCSSEDir="/Users/rory/DataViz/Ulysses/covid19/COVID-19/"
-sSourceFile=sCSSEDir+"csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
+sConfirmFile=sCSSEDir+"csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
+sDeathFile=sCSSEDir+"csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv"
 UlyFile=open("covid-19.uly","w")
 PopFile=open("PopulationData.csv","r")
 
@@ -14,7 +15,9 @@ sCmd = 'cd '+sCSSEDir+'; git pull origin master >& gitlog'
 #print (sCmd)
 subp.call(sCmd, shell=True)
 
-csvData = csv.reader(open(sSourceFile,"r"))
+#Use cofirmed cases as a template to determine size of arrays
+
+csvData = csv.reader(open(sConfirmFile,"r"))
 saHeader = next(csvData)
 #print(saHeader[0])
 
@@ -56,14 +59,14 @@ for iDay in range(iNumDays):
     if saDateTmp[0] == "11":
         saDate[iDay] += "Nov"
     if saDateTmp[0] == "12":
-        saDate[iDay] += "JDec"
+        saDate[iDay] += "Dec"
 
     saDate[iDay] += " 2020"
 
 sToday = saDate[iNumDays-1].replace(' ','')
 #sOutFileName =
 UlyFile=open('covid19-'+sToday+'.uly',"w")
-#print (sToday)
+print ('Last date for data: '+sToday)
 
 # Find number of countries
 iLine=0
@@ -100,15 +103,18 @@ iaCountry = [0 for i in range(iNumCountries)]
 iaMaxConfirmed = [0 for i in range(iNumCountries)]
 iaConfirmed = [[0 for i in range(iNumDays)] for j in range(iNumCountries)]
 iaConfirmedDaily = [[0 for i in range(iNumDays)] for j in range(iNumCountries)]
+iaDeaths = [[0 for i in range(iNumDays)] for j in range(iNumCountries)]
+iaDeathsDaily = [[0 for i in range(iNumDays)] for j in range(iNumCountries)]
 iaPopulation = [0 for i in range(iNumCountries)]
 iaCasesCapita = [[0 for i in range(iNumDays)] for j in range(iNumCountries)]
+iaDeathsCapita = [[0 for i in range(iNumDays)] for j in range(iNumCountries)]
 
 for iCountry in range(iNumCountries):
     saCountry[iCountry] = saCountryTmp[iCountry]
 
 
-# Now must reset to read in cases and create proper matrix
-csvData = csv.reader(open(sSourceFile,"r"))
+# Now must reset to read in cases a
+csvData = csv.reader(open(sConfirmFile,"r"))
 saHeader = next(csvData)
 
 iLine=0
@@ -154,9 +160,57 @@ for saLine in csvData:
 
     iLine += 1
 
+# Now read in deaths
+csvData = csv.reader(open(sDeathFile,"r"))
+saHeader = next(csvData)
+
+iLine=0
+iCountry = 0
+for saLine in csvData:
+    #print(saLine)
+    bMatch = 0 # Assume the row is a new country
+    sCountry=saLine[1]
+    #print(sCountry)
+
+    # Has this country been found before?
+    for jLine in range(iCountry):
+        #print(sCountry,saCountry[jLine],jLine,iNumCountries)
+        if (sCountry == saCountry[jLine]):
+            # Match!
+            #print('  Match found')
+            bMatch=1
+            iCountryNow = iaCountry[jLine]
+            jLine = iNumCountries # break out of loop
+
+    if bMatch == 0:
+        #print(repr(iNumCountries))
+        saCountry[iCountry] = sCountry
+        iaCountry[iCountry] = iCountry
+        #print(saCountry[iCountry],repr(iaCountry[iCountry]))
+        iCountryNow = iCountry
+        iCountry += 1
+
+    #for iDay in range(iNumDays):
+
+
+    for iDay in range(iNumDays):
+        iaDeaths[iCountryNow][iDay] += int(saLine[iDay+4])
+        #print(sCountry,repr(iCountryNow),repr(iDay),saLine[iDay+4],repr(iaDeaths[iCountryNow][iDay]))
+        #if iaConfirmed[iCountryNow][iDay] > iaMaxConfirmed[iCountryNow]:
+        #    iaMaxConfirmed[iCountryNow] = iaConfirmed[iCountryNow][iDay]
+        if iDay > 0:
+            iaDeathsDaily[iCountryNow][iDay] =  iaDeaths[iCountryNow][iDay] - iaDeaths[iCountryNow][iDay-1]
+        else:
+            iaDeathsDaily[iCountryNow][iDay] = iaDeaths[iCountryNow][iDay]
+        if iaDeathsDaily[iCountryNow][iDay] < 0:
+            iaDeathsDaily[iCountryNow][iDay] = 0
+
+    iLine += 1
+
 #print("Country\tMaxC")
 #for iCountry in range(iNumCountries):
 
+# Read population data and calculate stats per capita
 csvData = csv.reader(PopFile)
 saHeader = next(csvData)
 #print(saHeader[0])
@@ -167,7 +221,10 @@ for saLine in csvData:
         if saCountry[iCountry]==sCountry:
             iaPopulation[iCountry]=iPop
             for iDay in range (iNumDays):
+                # Actually per million
                 iaCasesCapita[iCountry][iDay]=iaConfirmed[iCountry][iDay]/iaPopulation[iCountry]*1e6
+                iaDeathsCapita[iCountry][iDay]=iaDeaths[iCountry][iDay]/iaPopulation[iCountry]*1e6
+
 
 # Now rank countries by total number of infections
 iaWorst = [0 for i in range(iNumCountries)]
@@ -183,7 +240,9 @@ iaWorst.sort(reverse=True)
     #print(saCountry[iCountry]+'\t'+repr(iaWorst[iCountry]))
 
 
-sOutLine=',Country ID,Days Since 22 Jan,Cumulative Cases,New Cases,Cases per Million,Population,#Country,#Date,NULL\n'
+sOutLine=',Country ID,Days Since 22 Jan,Cumulative Cases,New Cases,Cases per Million,'
+sOutLine += 'Cumulative Deaths,New Deaths,Deaths per Million,Population,'
+sOutLine += '#Country,#Date,NULL\n'
 UlyFile.write(sOutLine)
 
 iLine=0
@@ -193,9 +252,10 @@ for iCountry in range(iNumCountries):
         saCountry[iCountry] = "South Korea"
     if iaConfirmed[iCountry][iNumDays-1] >= iaWorst[24]:
         for iDay in range(iNumDays):
-            sOutLine=repr(iLine)+','+repr(iCountryID)+','+repr(iaDay[iDay])+','+repr(iaConfirmed[iCountry][iDay])
-            sOutLine += ','+repr(iaConfirmedDaily[iCountry][iDay])+','+repr(iaCasesCapita[iCountry][iDay])
-            sOutLine += ','+repr(iaPopulation[iCountry])+','+saCountry[iCountry]+','+saDate[iDay]+',-1\n'
+            sOutLine=repr(iLine)+','+repr(iCountryID)+','+repr(iaDay[iDay])+','
+            sOutLine += repr(iaConfirmed[iCountry][iDay])+','+repr(iaConfirmedDaily[iCountry][iDay])+','+repr(iaCasesCapita[iCountry][iDay])+','
+            sOutLine += repr(iaDeaths[iCountry][iDay])+','+repr(iaDeathsDaily[iCountry][iDay])+','+repr(iaDeathsCapita[iCountry][iDay])+','
+            sOutLine += repr(iaPopulation[iCountry])+','+saCountry[iCountry]+','+saDate[iDay]+',-1\n'
             UlyFile.write(sOutLine)
             iLine += 1
 
