@@ -1,3 +1,12 @@
+"""
+
+Download and convert COVID Trackin Project COVID-19 data in a VR Ulysses file.
+
+Author: Rory Barnes
+Date: 8 Apr 2020
+
+"""
+
 import numpy as np
 import string as str
 import subprocess as subp
@@ -15,6 +24,7 @@ iDaysJune=30
 iDaysJuly=31
 iDaysAug=31
 
+# Return number of days, and date
 def fnDays(sDate):
     iYear=int(sDate[0:4])
     iMonth=int(sDate[4:6])
@@ -49,13 +59,21 @@ def fnDays(sDate):
         sDate += 'Jul'
     if iMonth == 8:
         sDate += 'Aug'
+    if iMonth == 9:
+        sDate += "Sep"
+    if iMonth == 10:
+        sDate += "Oct"
+    if iMonth == 11:
+        sDate += "Nov"
+    if iMonth == 12:
+        sDate += "Dec"
 
     sDate += ' 2020'
     #print (sDate)
     return iNumDays,sDate
 
+# Return iState,sState,iPopulation (from Wikipedia)
 def fnState(sAbbrev):
-    # iState,sState,iPopulation
     if sAbbrev == "AK":
         return 0,"Alaska",0.732
     if sAbbrev == "AL":
@@ -170,15 +188,12 @@ def fnState(sAbbrev):
         return 55,"Wyoming",0.579
 
 iNumStates = 56
-#iNumDays = 27
 
 # Get latest data
 sCmd = 'cd '+sDirCovidTracking+'; git pull origin master >& gitlog'
-#print (sCmd)
 subp.call(sCmd, shell=True)
 
 print('Latest data set downloaded.')
-
 
 """
 To initialize columns, must get total number of days in latest data set. The
@@ -220,7 +235,6 @@ totalTestResultsIncrease,24
 
 csvData = csv.reader(open(sSource,"r"))
 saHeader = next(csvData)
-#print(saHeader[0],saHeader[5])
 
 saLine = next(csvData)
 sDate=saLine[0]
@@ -319,6 +333,7 @@ for saLine in csvData:
     iaTestsMillion[iState][iDaysSince04Mar-1] = iaTests[iState][iDaysSince04Mar-1]/iaPop[iState]
 
 
+# Write data!
 sOut='covid19-US-'+saDate[-1].replace(" ", "") +'.csv'
 OutFile=open(sOut,'w')
 

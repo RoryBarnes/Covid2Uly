@@ -1,9 +1,20 @@
+"""
+
+Download and convert JHU CSSE COVID-19 data in a VR Ulysses file.
+Only print out the 25 countries with the most confirmed cases.
+
+Author: Rory Barnes
+Date: 8 Apr 2020
+
+"""
+
 import numpy as np
 import string as str
 import subprocess as subp
 import csv
 import subprocess as subp
 
+# Director and file names
 sCSSEDir="/Users/rory/DataViz/Ulysses/covid19/COVID-19/"
 sConfirmFile=sCSSEDir+"csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
 sDeathFile=sCSSEDir+"csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv"
@@ -12,14 +23,11 @@ PopFile=open("PopulationData.csv","r")
 
 # Get latest data
 sCmd = 'cd '+sCSSEDir+'; git pull origin master >& gitlog'
-#print (sCmd)
 subp.call(sCmd, shell=True)
 
 #Use cofirmed cases as a template to determine size of arrays
-
 csvData = csv.reader(open(sConfirmFile,"r"))
 saHeader = next(csvData)
-#print(saHeader[0])
 
 iNumCols=len(saHeader)
 iNumDays=iNumCols-4
@@ -31,7 +39,6 @@ saDate = ["" for i in range(iNumDays)]
 
 # Get date
 for iDay in range(iNumDays):
-    #print(saWords[iDay+4])
     saDateTmp=saHeader[iDay+4].split("/")
 
     saDate[iDay] = saDateTmp[1]+' '
@@ -64,8 +71,7 @@ for iDay in range(iNumDays):
     saDate[iDay] += " 2020"
 
 sToday = saDate[iNumDays-1].replace(' ','')
-#sOutFileName =
-UlyFile=open('covid19-'+sToday+'.uly',"w")
+UlyFile=open('covid19-global-'+sToday+'.csv',"w")
 print ('Last date for data: '+sToday)
 
 # Find number of countries
@@ -74,10 +80,8 @@ iNumCountries = 0
 iaCountry = [0 for i in range(300)]
 saCountryTmp = ["" for i in range(300)]
 for saLine in csvData:
-    #print(saLine)
     bMatch = 0 # Assume the row is a new country
     sCountry=saLine[1]
-    #print(sCountry)
 
     # Has this country been found before?
     for jLine in range(iNumCountries):
@@ -98,6 +102,7 @@ for saLine in csvData:
 
 print('Total number of countries: '+repr(iNumCountries))
 
+# Now initialize arrays
 saCountry = ["" for i in range(iNumCountries)]
 iaCountry = [0 for i in range(iNumCountries)]
 iaMaxConfirmed = [0 for i in range(iNumCountries)]
@@ -112,18 +117,16 @@ iaDeathsCapita = [[0 for i in range(iNumDays)] for j in range(iNumCountries)]
 for iCountry in range(iNumCountries):
     saCountry[iCountry] = saCountryTmp[iCountry]
 
-
 # Now must reset to read in cases a
 csvData = csv.reader(open(sConfirmFile,"r"))
 saHeader = next(csvData)
 
+# Now loop through data and populate arrays
 iLine=0
 iCountry = 0
 for saLine in csvData:
-    #print(saLine)
     bMatch = 0 # Assume the row is a new country
     sCountry=saLine[1]
-    #print(sCountry)
 
     # Has this country been found before?
     for jLine in range(iCountry):
@@ -143,14 +146,9 @@ for saLine in csvData:
         iCountryNow = iCountry
         iCountry += 1
 
-    #for iDay in range(iNumDays):
-
-
     for iDay in range(iNumDays):
         #print(sCountry,repr(iDay),saLine[iDay+4])
         iaConfirmed[iCountryNow][iDay] += int(saLine[iDay+4])
-        #if iaConfirmed[iCountryNow][iDay] > iaMaxConfirmed[iCountryNow]:
-        #    iaMaxConfirmed[iCountryNow] = iaConfirmed[iCountryNow][iDay]
         if iDay > 0:
             iaConfirmedDaily[iCountryNow][iDay] =  iaConfirmed[iCountryNow][iDay] - iaConfirmed[iCountryNow][iDay-1]
         else:
@@ -190,9 +188,6 @@ for saLine in csvData:
         iCountryNow = iCountry
         iCountry += 1
 
-    #for iDay in range(iNumDays):
-
-
     for iDay in range(iNumDays):
         iaDeaths[iCountryNow][iDay] += int(saLine[iDay+4])
         #print(sCountry,repr(iCountryNow),repr(iDay),saLine[iDay+4],repr(iaDeaths[iCountryNow][iDay]))
@@ -207,10 +202,7 @@ for saLine in csvData:
 
     iLine += 1
 
-#print("Country\tMaxC")
-#for iCountry in range(iNumCountries):
-
-# Read population data and calculate stats per capita
+# Read population data to calculate stats per capita
 csvData = csv.reader(PopFile)
 saHeader = next(csvData)
 #print(saHeader[0])
@@ -233,13 +225,11 @@ for iCountry in range(iNumCountries):
     iaWorst[iCountry] = iaConfirmed[iCountry][iNumDays-1]
     #print(saCountry[iCountry]+'\t'+repr(iaWorst[iCountry]))
 
+# Rank countries by number of confirmed cases
 iaWorst.sort(reverse=True)
 #print(repr(iaWorst[24]))
-#for iCountry in range(iNumCountries):
-    #iaWorst[iCountry] = iaConfirmed[iCountry][iNumDays-1]
-    #print(saCountry[iCountry]+'\t'+repr(iaWorst[iCountry]))
 
-
+# Write the file!
 sOutLine=',Country ID,Days Since 22 Jan,Cumulative Cases,New Cases,Cases per Million,'
 sOutLine += 'Cumulative Deaths,New Deaths,Deaths per Million,Population,'
 sOutLine += '#Country,#Date,NULL\n'
