@@ -17,7 +17,9 @@ import re
 sDirCovidTracking="/Users/rory/DataViz/Ulysses/covid19/covid-tracking-data/data"
 sSource="/Users/rory/DataViz/Ulysses/covid19/covid-tracking-data/data/states_daily_4pm_et.csv"
 
-iDaysMarch=27
+iDaysJan=9
+iDaysFeb=29
+iDaysMarch=31
 iDaysApril=30
 iDaysMay=31
 iDaysJune=30
@@ -29,22 +31,28 @@ def fnDays(sDate):
     iYear=int(sDate[0:4])
     iMonth=int(sDate[4:6])
     iDay=int(sDate[-2:])
+    # Sometime I'll make this more elegant
+    if iMonth == 1:
+        iNumDays = iDay - 22
+    if iMonth == 2:
+        iNumDays = iDay + iDaysJan
     if iMonth == 3:
-        iNumDays = iDay - 4
+        iNumDays = iDay + iDaysJan + iDaysFeb
     if iMonth == 4:
-        iNumDays = iDay + iDaysMarch
+        iNumDays = iDay + iDaysJan + iDaysFeb + iDaysMarch
     if iMonth == 5:
-        iNumDays = iDay + iDaysApril + iDaysMarch
+        iNumDays = iDay + iDaysApril + iDaysMarch + iDaysJan + iDaysFeb
     if iMonth == 6:
-        iNumDays = iDay + iDaysApril + iDaysMay + iDaysMarch
+        iNumDays = iDay + iDaysApril + iDaysMay + iDaysMarch + iDaysJan + iDaysFeb
     if iMonth == 7:
-        iNumDays = iDay + iDaysApril + iDaysMay + iDaysJune + iDaysMarch
+        iNumDays = iDay + iDaysApril + iDaysMay + iDaysJune + iDaysMarch + iDaysJan + iDaysFeb
     if iMonth == 8:
-        iNumDays = iDay + iDaysApril + iDaysMay + iDaysJune + iDaysJuly + iDaysMarch
+        iNumDays = iDay + iDaysApril + iDaysMay + iDaysJune + iDaysJuly + iDaysMarch + iDaysJan + iDaysFeb
     if iMonth == 9:
-        iNumDays = iDay + iDaysApril + iDaysMay + iDaysJune + iDaysJuly + iDaysAug + iDaysMarch
+        iNumDays = iDay + iDaysApril + iDaysMay + iDaysJune + iDaysJuly + iDaysAug + iDaysMarch + iDaysJan + iDaysFeb
 
     # First day still counts
+    #print(repr(iDay),repr(iMonth),sDate)
     iNumDays += 1
     sDate=repr(iDay)+' '
     if iMonth == 3:
@@ -276,71 +284,71 @@ for saLine in csvData:
     sDate=saLine[0]
     sAbbrev=saLine[1]
     # Must convert to days since March 4th
-    iDaysSince04Mar,sDateNew = fnDays(sDate)
+    iDaysSince22Jan,sDateNew = fnDays(sDate)
     #print(sDate+' '+repr(iDaysSince04Mar))
-    saDate[iDaysSince04Mar-1] = sDateNew
-    #print(repr(iDaysSince04Mar))
+    saDate[iDaysSince22Jan-1] = sDateNew
+    #print(repr(iDaysSince22Jan))
     iState,sState,iPopulation = fnState(sAbbrev)
     saState[iState] = sState
     iaPop[iState] = iPopulation
-    #print(sState,repr(iState),repr(iDaysSince04Mar))
+    #print(sState,repr(iState),repr(iDaysSince22Jan))
     if saLine[2] != '':
-        iaPositive[iState][iDaysSince04Mar-1] = int(saLine[2])
+        iaPositive[iState][iDaysSince22Jan-1] = int(saLine[2])
     if saLine[3] != '':
-        iaNegative[iState][iDaysSince04Mar-1] = int(saLine[3])
+        iaNegative[iState][iDaysSince22Jan-1] = int(saLine[3])
     if saLine[4] != '':
-        iaPending[iState][iDaysSince04Mar-1] = int(saLine[4])
+        iaPending[iState][iDaysSince22Jan-1] = int(saLine[4])
     if saLine[5] != '':
-        iaHospCur[iState][iDaysSince04Mar-1] = int(saLine[5])
+        iaHospCur[iState][iDaysSince22Jan-1] = int(saLine[5])
     if saLine[6] != '':
-        iaHospCum[iState][iDaysSince04Mar-1] = int(saLine[6])
+        iaHospCum[iState][iDaysSince22Jan-1] = int(saLine[6])
     if saLine[7] != '':
-        iaICUCur[iState][iDaysSince04Mar-1] = int(saLine[7])
+        iaICUCur[iState][iDaysSince22Jan-1] = int(saLine[7])
     if saLine[8] != '':
-        iaICUCum[iState][iDaysSince04Mar-1] = int(saLine[8])
+        iaICUCum[iState][iDaysSince22Jan-1] = int(saLine[8])
     if saLine[9] != '':
-        iaVentCur[iState][iDaysSince04Mar-1] = int(saLine[9])
+        iaVentCur[iState][iDaysSince22Jan-1] = int(saLine[9])
     if saLine[10] != '':
-        iaVentCum[iState][iDaysSince04Mar-1] = int(saLine[10])
+        iaVentCum[iState][iDaysSince22Jan-1] = int(saLine[10])
     if saLine[11] != '':
-        iaRecovered[iState][iDaysSince04Mar-1] = int(saLine[11])
+        iaRecovered[iState][iDaysSince22Jan-1] = int(saLine[11])
     if saLine[14] != '':
-        iaDeaths[iState][iDaysSince04Mar-1] = int(saLine[14])
+        iaDeaths[iState][iDaysSince22Jan-1] = int(saLine[14])
     if saLine[17] != '':
-        iaTests[iState][iDaysSince04Mar-1] = int(saLine[17])
+        iaTests[iState][iDaysSince22Jan-1] = int(saLine[17])
     if saLine[20] != '':
-        iaDeathsNew[iState][iDaysSince04Mar-1] = int(saLine[20])
+        iaDeathsNew[iState][iDaysSince22Jan-1] = int(saLine[20])
     if saLine[21] != '':
-        iaHospNew[iState][iDaysSince04Mar-1] = int(saLine[21])
+        iaHospNew[iState][iDaysSince22Jan-1] = int(saLine[21])
     if saLine[22] != '':
-        iaNegNew[iState][iDaysSince04Mar-1] = int(saLine[22])
+        iaNegNew[iState][iDaysSince22Jan-1] = int(saLine[22])
     if saLine[23] != '':
-        iaPosNew[iState][iDaysSince04Mar-1] = int(saLine[23])
+        iaPosNew[iState][iDaysSince22Jan-1] = int(saLine[23])
     if saLine[24] != '':
-        iaTestsNew[iState][iDaysSince04Mar-1] = int(saLine[24])
+        iaTestsNew[iState][iDaysSince22Jan-1] = int(saLine[24])
 
-    if iaTestsNew[iState][iDaysSince04Mar-1] > 0:
+    if iaTestsNew[iState][iDaysSince22Jan-1] > 0:
         #print("% Pos > 0")
-        daPercentPos[iState][iDaysSince04Mar-1] = float(iaPosNew[iState][iDaysSince04Mar-1])/iaTestsNew[iState][iDaysSince04Mar-1]
-        #print(repr(iaPosNew[iState][iDaysSince04Mar-1]), repr(iaTestsNew[iState][iDaysSince04Mar-1]), repr(daPercentPos[iState][iDaysSince04Mar-1]))
+        daPercentPos[iState][iDaysSince22Jan-1] = float(iaPosNew[iState][iDaysSince22Jan-1])/iaTestsNew[iState][iDaysSince22Jan-1]
+        #print(repr(iaPosNew[iState][iDaysSince22Jan-1]), repr(iaTestsNew[iState][iDaysSince22Jan-1]), repr(daPercentPos[iState][iDaysSince22Jan-1]))
     else:
-        daPercentPos[iState][iDaysSince04Mar-1] = 0.0
+        daPercentPos[iState][iDaysSince22Jan-1] = 0.0
 
 
-    #print(repr(daPercentPos[iState][iDaysSince04Mar-1]))
-    iaDeathsMillion[iState][iDaysSince04Mar-1] = iaDeaths[iState][iDaysSince04Mar-1]/iaPop[iState]
-    iaPosMillion[iState][iDaysSince04Mar-1] = iaPositive[iState][iDaysSince04Mar-1]/iaPop[iState]
-    iaTestsMillion[iState][iDaysSince04Mar-1] = iaTests[iState][iDaysSince04Mar-1]/iaPop[iState]
+    #print(repr(daPercentPos[iState][iDaysSince22Jan-1]))
+    iaDeathsMillion[iState][iDaysSince22Jan-1] = iaDeaths[iState][iDaysSince22Jan-1]/iaPop[iState]
+    iaPosMillion[iState][iDaysSince22Jan-1] = iaPositive[iState][iDaysSince22Jan-1]/iaPop[iState]
+    iaTestsMillion[iState][iDaysSince22Jan-1] = iaTests[iState][iDaysSince22Jan-1]/iaPop[iState]
 
 
 # Write data!
 sOut='covid19-US-'+saDate[-1].replace(" ", "") +'.csv'
 OutFile=open(sOut,'w')
 
-sOutLine=',State ID,Days Since Mar 4,'
+sOutLine=',State ID,Days Since Jan 22,'
 sOutLine += 'Cumulative Deaths,New Deaths,'
 sOutLine += 'Cumulative Positive,New Positive,% Positive,'
-sOutLine += 'Cumulative Tests,New Tests,Recovered,'
+sOutLine += 'Cumulative Tests,New Tests,'
 sOutLine += 'Cumulative Hospitalized,Current Hospitalized,New Hospitalized,'
 sOutLine += 'Cumulative in ICU,Currently in ICU,'
 sOutLine += 'Cumulative on Vent.,Currently on Vent.,'
@@ -357,7 +365,7 @@ for iState in range(iNumStates):
         sOutLine = repr(iID)+','+repr(iState)+','+repr(iDay)+','
         sOutLine += repr(iaDeaths[iState][iDay])+','+repr(iaDeathsNew[iState][iDay])+','
         sOutLine += repr(iaPositive[iState][iDay])+','+repr(iaPosNew[iState][iDay])+','+repr(daPercentPos[iState][iDay])+','
-        sOutLine += repr(iaTests[iState][iDay])+','+repr(iaTestsNew[iState][iDay])+','+repr(iaRecovered[iState][iDay])+','
+        sOutLine += repr(iaTests[iState][iDay])+','+repr(iaTestsNew[iState][iDay])+','
         sOutLine += repr(iaHospCum[iState][iDay])+','+repr(iaHospCur[iState][iDay])+','+repr(iaHospNew[iState][iDay])+','
         sOutLine += repr(iaICUCum[iState][iDay])+','+repr(iaICUCur[iState][iDay])+','
         sOutLine += repr(iaVentCum[iState][iDay])+','+repr(iaVentCur[iState][iDay])+','
