@@ -343,6 +343,7 @@ for saLine in csvData:
 
 # Write data!
 sOut='covid19-US-'+saDate[-1].replace(" ", "") +'.csv'
+print ('Last date for data: '+saDate[-1])
 OutFile=open(sOut,'w')
 
 sOutLine=',State ID,Days Since Jan 22,'
