@@ -55,6 +55,10 @@ def fnDays(sDate):
     #print(repr(iDay),repr(iMonth),sDate)
     iNumDays += 1
     sDate=repr(iDay)+' '
+    if iMonth == 1:
+        sDate += 'Jan'
+    if iMonth == 2:
+        sDate += 'Feb'
     if iMonth == 3:
         sDate += 'Mar'
     if iMonth == 4:
@@ -226,19 +230,21 @@ inIcuCumulative,8
 onVentilatorCurrently,9
 onVentilatorCumulative,10
 recovered,11
-hash,12
-dateChecked,13
-death,14
-hospitalized,15
-total,16
-totalTestResults,17
-posNeg,18
-fips,19
-deathIncrease,20
-hospitalizedIncrease,21
-negativeIncrease,22
-positiveIncrease,23
-totalTestResultsIncrease,24
+DataQuality,12
+lasUpdate,13
+hash,14
+dateChecked,15
+death,16
+hospitalized,17
+total,18
+totalTestResults,19
+posNeg,20
+fips,21
+deathIncrease,22
+hospitalizedIncrease,23
+negativeIncrease,24
+positiveIncrease,25
+totalTestResultsIncrease,26
 """
 
 csvData = csv.reader(open(sSource,"r"))
@@ -312,20 +318,20 @@ for saLine in csvData:
         iaVentCum[iState][iDaysSince22Jan-1] = int(saLine[10])
     if saLine[11] != '':
         iaRecovered[iState][iDaysSince22Jan-1] = int(saLine[11])
-    if saLine[14] != '':
-        iaDeaths[iState][iDaysSince22Jan-1] = int(saLine[14])
-    if saLine[17] != '':
-        iaTests[iState][iDaysSince22Jan-1] = int(saLine[17])
-    if saLine[20] != '':
-        iaDeathsNew[iState][iDaysSince22Jan-1] = int(saLine[20])
-    if saLine[21] != '':
-        iaHospNew[iState][iDaysSince22Jan-1] = int(saLine[21])
+    if saLine[16] != '':
+        iaDeaths[iState][iDaysSince22Jan-1] = int(saLine[16])
+    if saLine[19] != '':
+        iaTests[iState][iDaysSince22Jan-1] = int(saLine[19])
     if saLine[22] != '':
-        iaNegNew[iState][iDaysSince22Jan-1] = int(saLine[22])
+        iaDeathsNew[iState][iDaysSince22Jan-1] = int(saLine[22])
     if saLine[23] != '':
-        iaPosNew[iState][iDaysSince22Jan-1] = int(saLine[23])
+        iaHospNew[iState][iDaysSince22Jan-1] = int(saLine[23])
     if saLine[24] != '':
-        iaTestsNew[iState][iDaysSince22Jan-1] = int(saLine[24])
+        iaNegNew[iState][iDaysSince22Jan-1] = int(saLine[24])
+    if saLine[25] != '':
+        iaPosNew[iState][iDaysSince22Jan-1] = int(saLine[25])
+    if saLine[26] != '':
+        iaTestsNew[iState][iDaysSince22Jan-1] = int(saLine[26])
 
     if iaTestsNew[iState][iDaysSince22Jan-1] > 0:
         #print("% Pos > 0")
