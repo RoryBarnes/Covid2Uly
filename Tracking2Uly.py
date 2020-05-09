@@ -366,7 +366,7 @@ sOutLine += 'NULL\n'
 
 OutFile.write(sOutLine)
 
-iID = 0
+iID = 1
 for iState in range(iNumStates):
     for iDay in range(iNumDays):
         sOutLine = repr(iID)+','+repr(iState)+','+repr(iDay)+','

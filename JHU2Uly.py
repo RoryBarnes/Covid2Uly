@@ -235,7 +235,7 @@ sOutLine += 'Cumulative Deaths,New Deaths,Deaths per Million,Population,'
 sOutLine += '#Country,#Date,NULL\n'
 UlyFile.write(sOutLine)
 
-iLine=0
+iLine=1
 iCountryID = 0
 for iCountry in range(iNumCountries):
     if saCountry[iCountry] == "Korea, South":
