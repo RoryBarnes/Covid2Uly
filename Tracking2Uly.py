@@ -13,9 +13,11 @@ import subprocess as subp
 import csv
 import subprocess as subp
 import re
+import requests
 
 sDirCovidTracking="/Users/rory/DataViz/Ulysses/covid19/covid-tracking-data/data"
-sSource="/Users/rory/DataViz/Ulysses/covid19/covid-tracking-data/data/states_daily_4pm_et.csv"
+#sSource="/Users/rory/DataViz/Ulysses/covid19/covid-tracking-data/data/states_daily_4pm_et.csv"
+sSource="daily.csv"
 
 iDaysJan=9
 iDaysFeb=29
@@ -202,9 +204,16 @@ def fnState(sAbbrev):
 iNumStates = 56
 
 # Get latest data
-sCmd = 'cd '+sDirCovidTracking+'; git pull origin master >& gitlog'
-subp.call(sCmd, shell=True)
+#sCmd = 'cd '+sDirCovidTracking+'; git pull origin master >& gitlog'
+#sCmd = 'cd '+sDirCovidTracking
+url = 'https://covidtracking.com/api/v1/states/daily.csv'
+r = requests.get(url, allow_redirects=True)
+open('daily.csv','wb').write(r.content)
 
+#sCmd = `mv daily.csv `+sDirCovidTracking
+#subp.call(sCmd, shell=True)
+
+#exit()
 print('Latest data set downloaded.')
 
 """
@@ -361,8 +370,7 @@ sOutLine += 'Cumulative in ICU,Currently in ICU,'
 sOutLine += 'Cumulative on Vent.,Currently on Vent.,'
 sOutLine += 'Deaths/Million,Pos./Million,Tests/Million,'
 sOutLine += 'Population,'
-sOutLine += '#State,#Date,'
-sOutLine += 'NULL\n'
+sOutLine += '#State,#Date\n'
 
 OutFile.write(sOutLine)
 
@@ -378,7 +386,7 @@ for iState in range(iNumStates):
         sOutLine += repr(iaVentCum[iState][iDay])+','+repr(iaVentCur[iState][iDay])+','
         sOutLine += repr(iaDeathsMillion[iState][iDay])+','+repr(iaPosMillion[iState][iDay])+','+repr(iaTestsMillion[iState][iDay])+','
         sOutLine += repr(iaPop[iState])+','
-        sOutLine += saState[iState]+','+saDate[iDay]+',-1\n'
+        sOutLine += saState[iState]+','+saDate[iDay]+'\n'
         OutFile.write(sOutLine)
         iID += 1
 

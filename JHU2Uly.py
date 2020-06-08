@@ -232,7 +232,7 @@ iaWorst.sort(reverse=True)
 # Write the file!
 sOutLine=',Country ID,Days Since 22 Jan,Cumulative Cases,New Cases,Cases per Million,'
 sOutLine += 'Cumulative Deaths,New Deaths,Deaths per Million,Population,'
-sOutLine += '#Country,#Date,NULL\n'
+sOutLine += '#Country,#Date\n'
 UlyFile.write(sOutLine)
 
 iLine=1
@@ -245,7 +245,7 @@ for iCountry in range(iNumCountries):
             sOutLine=repr(iLine)+','+repr(iCountryID)+','+repr(iaDay[iDay])+','
             sOutLine += repr(iaConfirmed[iCountry][iDay])+','+repr(iaConfirmedDaily[iCountry][iDay])+','+repr(iaCasesCapita[iCountry][iDay])+','
             sOutLine += repr(iaDeaths[iCountry][iDay])+','+repr(iaDeathsDaily[iCountry][iDay])+','+repr(iaDeathsCapita[iCountry][iDay])+','
-            sOutLine += repr(iaPopulation[iCountry])+','+saCountry[iCountry]+','+saDate[iDay]+',-1\n'
+            sOutLine += repr(iaPopulation[iCountry])+','+saCountry[iCountry]+','+saDate[iDay]+'\n'
             UlyFile.write(sOutLine)
             iLine += 1
 
