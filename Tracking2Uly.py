@@ -528,4 +528,7 @@ for iState in range(iNumStates):
         OutFile.write(sOutLine)
         iID += 1
 
+# Copy file into US.csv
+cmd = "cp "+sOut+" US.csv"
+subp.call(cmd,shell=True)
 exit(0)

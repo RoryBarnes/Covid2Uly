@@ -78,7 +78,8 @@ for iDay in range(iNumDays):
     saDate[iDay] += " 2020"
 
 sToday = saDate[iNumDays-1].replace(' ','')
-UlyFile=open('covid19-global-'+sToday+'.csv',"w")
+sOut='covid19-global-'+sToday+'.csv'
+UlyFile=open(sOut,"w")
 print ('Last date for data: '+sToday)
 
 # Find number of countries
@@ -261,3 +262,7 @@ for iCountry in range(iNumCountries):
         #print(repr(iCountryID))
         iCountryID += 1
         #exit()
+
+# Copy file into US.csv
+cmd = "cp "+sOut+" global.csv"
+subp.call(cmd,shell=True)
