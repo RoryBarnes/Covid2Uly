@@ -14,6 +14,7 @@ import csv
 import subprocess as subp
 import re
 import requests
+import pandas as pd
 
 sDirCovidTracking="/Users/rory/DataViz/Ulysses/covid19/covid-tracking-data/data"
 #sSource="/Users/rory/DataViz/Ulysses/covid19/covid-tracking-data/data/states_daily_4pm_et.csv"
@@ -206,6 +207,9 @@ iNumStates = 56
 # Get latest data
 #sCmd = 'cd '+sDirCovidTracking+'; git pull origin master >& gitlog'
 #sCmd = 'cd '+sDirCovidTracking
+
+
+# Cut for debugging
 url = 'https://covidtracking.com/api/v1/states/daily.csv'
 r = requests.get(url, allow_redirects=True)
 open('daily.csv','wb').write(r.content)
@@ -225,7 +229,7 @@ to read in the numeric data is executed.
 """
 
 """
-Column header of teh COVID-19 Tracking data
+Column header of the COVID-19 Tracking data
 
 date,0
 state,1
@@ -241,21 +245,145 @@ onVentilatorCumulative,10
 recovered,11
 DataQuality,12
 lasUpdate,13
-hash,14
-dateChecked,15
+dateModified,14
+checkTime,15
 death,16
 hospitalized,17
-total,18
-totalTestResults,19
-posNeg,20
-fips,21
-deathIncrease,22
-hospitalizedIncrease,23
-negativeIncrease,24
-positiveIncrease,25
-totalTestResultsIncrease,26
+dateChecked,18
+fips,19
+positiveIncrease,20
+negativeIncrease,21
+totalTestResultsIncrease,22
+posNeg,23
+deathIncrease,24
+hospitalizedIncrease,25
+hash,26
+commericalScore,27
+negRegularScore,28
+negativeScore,29
+positiveScore,30
+score,31
+grade,32
 """
 
+# Read in data as Pandas Dataframe
+data = pd.read_csv(sSource)
+# Fill in missing values with 0
+data.fillna(0, inplace=True)
+# Convert relevant columns to ints
+data['death'] = data['death'].astype(int)
+data['hospitalizedCumulative'] = data['hospitalizedCumulative'].astype(int)
+data['hospitalizedCurrently'] = data['hospitalizedCurrently'].astype(int)
+data['inIcuCumulative'] = data['inIcuCumulative'].astype(int)
+data['inIcuCurrently'] = data['inIcuCurrently'].astype(int)
+data['negative'] = data['negative'].astype(int)
+data['onVentilatorCumulative'] = data['onVentilatorCumulative'].astype(int)
+data['onVentilatorCurrently'] = data['onVentilatorCurrently'].astype(int)
+data['pending'] = data['pending'].astype(int)
+data['positive'] = data['positive'].astype(int)
+data['recovered'] = data['recovered'].astype(int)
+
+iaDate = data['date'].values
+iaDeathsTotal = data['death'].values
+iaHospitalizedCumulative = data['hospitalizedCumulative'].values
+iaHospitalizedCurrently = data['hospitalizedCurrently'].values
+iaInIcuCumulative = data['inIcuCumulative'].values
+iaInIcuCurrently = data['inIcuCurrently'].values
+iaNegativeCumulative = data['negative'].values
+iaOnVentilatorCumulative = data['onVentilatorCumulative'].values
+iaOnVentilatorCurrently = data['onVentilatorCurrently'].values
+iaPending = data['pending'].values
+iaPositiveCumulative = data['positive'].values
+iaRecoveredCumulative = data['recovered'].values
+
+saDataQuality = data['dataQualityGrade'].values
+saFIPS = data['fips'].values
+saHash = data['hash'].values
+saLastUpdate = data['lastUpdateEt'].values
+saState = data['state'].values
+
+iRows = len (data['date'].values)
+
+iNumDays,sFoo = fnDays(repr(iaDate[0]))
+
+print('Found '+repr(iNumDays)+' days of data.')
+
+iaPositive = [[0 for i in range(iNumDays)] for j in range(iNumStates)]
+iaNegative = [[0 for i in range(iNumDays)] for j in range(iNumStates)]
+iaPend = [[0 for i in range(iNumDays)] for j in range(iNumStates)]
+iaHospCur = [[0 for i in range(iNumDays)] for j in range(iNumStates)]
+iaHospCum = [[0 for i in range(iNumDays)] for j in range(iNumStates)]
+iaICUCur = [[0 for i in range(iNumDays)] for j in range(iNumStates)]
+iaICUCum = [[0 for i in range(iNumDays)] for j in range(iNumStates)]
+iaVentCum = [[0 for i in range(iNumDays)] for j in range(iNumStates)]
+iaVentCur = [[0 for i in range(iNumDays)] for j in range(iNumStates)]
+iaDeaths = [[0 for i in range(iNumDays)] for j in range(iNumStates)]
+iaTests = [[0 for i in range(iNumDays)] for j in range(iNumStates)]
+iaRecovered = [[0 for i in range(iNumDays)] for j in range(iNumStates)]
+iaDeathsNew = [[0 for i in range(iNumDays)] for j in range(iNumStates)]
+iaHospNew = [[0 for i in range(iNumDays)] for j in range(iNumStates)]
+iaNegNew = [[0 for i in range(iNumDays)] for j in range(iNumStates)]
+iaPosNew = [[0 for i in range(iNumDays)] for j in range(iNumStates)]
+iaTestsNew = [[0 for i in range(iNumDays)] for j in range(iNumStates)]
+daPercentPos = [[0.0 for i in range(iNumDays)] for j in range(iNumStates)]
+iaDeathsMillion = [[0 for i in range(iNumDays)] for j in range(iNumStates)]
+iaPosMillion = [[0 for i in range(iNumDays)] for j in range(iNumStates)]
+iaTestsMillion = [[0 for i in range(iNumDays)] for j in range(iNumStates)]
+iaTestsCumulative = [[0 for i in range(iNumDays)] for j in range(iNumStates)]
+saAbbrev = ["" for i in range(iNumStates)]
+iaPop = [0 for i in range(iNumStates)]
+saDate = ["" for i in range(iNumDays)]
+
+for iRow in range(iRows):
+    #sAbbrev=saLine[1]
+    # Must convert to days since 22 Jan
+    iDaysSince22Jan,sDateNew = fnDays(repr(iaDate[iRow]))
+    #print(sDate+' '+repr(iDaysSince04Mar))
+    saDate[iDaysSince22Jan-1] = sDateNew
+    #print(repr(iDaysSince22Jan))
+    #print(saState[iRow])
+    iState,sState,iPopulation = fnState(saState[iRow])
+    saAbbrev[iState] = sState
+    iaPop[iState] = iPopulation
+
+    iaPositive[iState][iDaysSince22Jan-1] = iaPositiveCumulative[iRow]
+    iaNegative[iState][iDaysSince22Jan-1] = iaNegativeCumulative[iRow]
+    iaPend[iState][iDaysSince22Jan-1] = iaPending[iRow]
+    iaHospCur[iState][iDaysSince22Jan-1] = iaHospitalizedCurrently[iRow]
+    iaHospCum[iState][iDaysSince22Jan-1] = iaHospitalizedCumulative[iRow]
+    iaICUCur[iState][iDaysSince22Jan-1] = iaInIcuCurrently[iRow]
+    iaICUCum[iState][iDaysSince22Jan-1] = iaInIcuCumulative[iRow]
+    iaVentCur[iState][iDaysSince22Jan-1] = iaOnVentilatorCurrently[iRow]
+    iaVentCum[iState][iDaysSince22Jan-1] = iaOnVentilatorCumulative[iRow]
+    iaRecovered[iState][iDaysSince22Jan-1] = iaRecoveredCumulative[iRow]
+    iaDeaths[iState][iDaysSince22Jan-1] = iaDeathsTotal[iRow]
+
+for iState in range(iNumStates):
+    for iDay in range(iNumDays):
+        if iDay > 0:
+            iaDeathsNew[iState][iDay] = iaDeaths[iState][iDay] - iaDeaths[iState][iDay-1]
+            iaHospNew[iState][iDay] = iaHospCum[iState][iDay] - iaHospCur[iState][iDay]
+            iaPosNew[iState][iDay] = iaPositive[iState][iDay] - iaPositive[iState][iDay-1]
+            iaTestsNew[iState][iDay] = iaTestsCumulative[iState][iDay] - iaTestsCumulative[iState][iDay-1]
+        else:
+            iaDeathsNew[iState][iDay] = 0
+            iaHospNew[iState][iDay] = 0
+            iaPosNew[iState][iDay] = 0
+            iaTestsCumulative[iState][iDay] = iaPositive[iState][iDay] + iaNegative[iState][iDay] + iaPend[iState][iDay]
+        iaDeathsMillion[iState][iDay] = iaDeaths[iState][iDay]/iaPop[iState]
+        iaPosMillion[iState][iDay] = iaPositive[iState][iDay]/iaPop[iState]
+        iaTestsMillion[iState][iDay] = iaTests[iState][iDay]/iaPop[iState]
+        if iaTestsNew[iState][iDaysSince22Jan-1] > 0:
+            #print("% Pos > 0")
+            daPercentPos[iState][iDay] = float(iaPosNew[iState][iDay])/iaTestsNew[iState][iDay]
+            #print(repr(iaPosNew[iState][iDaysSince22Jan-1]), repr(iaTestsNew[iState][iDaysSince22Jan-1]), repr(daPercentPos[iState][iDaysSince22Jan-1]))
+        else:
+            daPercentPos[iState][iDaysSince22Jan-1] = 0.0
+
+print ('Last date for data: '+saDate[-1])
+
+
+"""
 csvData = csv.reader(open(sSource,"r"))
 saHeader = next(csvData)
 
@@ -341,7 +469,11 @@ for saLine in csvData:
         iaPosNew[iState][iDaysSince22Jan-1] = int(saLine[25])
     if saLine[26] != '':
         iaTestsNew[iState][iDaysSince22Jan-1] = int(saLine[26])
+"""
 
+# Read in with Pandas data frame
+
+"""
     if iaTestsNew[iState][iDaysSince22Jan-1] > 0:
         #print("% Pos > 0")
         daPercentPos[iState][iDaysSince22Jan-1] = float(iaPosNew[iState][iDaysSince22Jan-1])/iaTestsNew[iState][iDaysSince22Jan-1]
@@ -354,11 +486,11 @@ for saLine in csvData:
     iaDeathsMillion[iState][iDaysSince22Jan-1] = iaDeaths[iState][iDaysSince22Jan-1]/iaPop[iState]
     iaPosMillion[iState][iDaysSince22Jan-1] = iaPositive[iState][iDaysSince22Jan-1]/iaPop[iState]
     iaTestsMillion[iState][iDaysSince22Jan-1] = iaTests[iState][iDaysSince22Jan-1]/iaPop[iState]
-
+"""
 
 # Write data!
 sOut='covid19-US-'+saDate[-1].replace(" ", "") +'.csv'
-print ('Last date for data: '+saDate[-1])
+#print ('Last date for data: '+saDate[-1])
 OutFile=open(sOut,'w')
 
 sOutLine=',State ID,Days Since Jan 22,'
@@ -375,8 +507,14 @@ sOutLine += '#State,#Date\n'
 OutFile.write(sOutLine)
 
 iID = 1
+#iLines =3000
+iDaysReport = 45
 for iState in range(iNumStates):
-    for iDay in range(iNumDays):
+#    for iDayIndex in range(iLines):
+#        iDay = iID + iDayIndex - iLines
+#    for iDay in range(iNumDays):
+    for iDayIndex in range(iDaysReport):
+        iDay = iNumDays + iDayIndex - iDaysReport
         sOutLine = repr(iID)+','+repr(iState)+','+repr(iDay)+','
         sOutLine += repr(iaDeaths[iState][iDay])+','+repr(iaDeathsNew[iState][iDay])+','
         sOutLine += repr(iaPositive[iState][iDay])+','+repr(iaPosNew[iState][iDay])+','+repr(daPercentPos[iState][iDay])+','

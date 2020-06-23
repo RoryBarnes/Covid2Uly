@@ -12,18 +12,25 @@ import numpy as np
 import string as str
 import subprocess as subp
 import csv
-import subprocess as subp
+import re
+import requests
+import pandas as pd
 
 # Director and file names
-sCSSEDir="/Users/rory/DataViz/Ulysses/covid19/COVID-19/"
-sConfirmFile=sCSSEDir+"csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
-sDeathFile=sCSSEDir+"csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv"
-UlyFile=open("covid-19.uly","w")
+sConfirmFile="time_series_covid19_confirmed_global.csv"
+sDeathFile="time_series_covid19_deaths_global.csv"
+urlbase="https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/"
 PopFile=open("PopulationData.csv","r")
 
 # Get latest data
-sCmd = 'cd '+sCSSEDir+'; git pull origin master >& gitlog'
-subp.call(sCmd, shell=True)
+url = urlbase+sConfirmFile
+r = requests.get(url, allow_redirects=False)
+open(sConfirmFile,'wb').write(r.content)
+
+
+url = urlbase+sDeathFile
+r = requests.get(url, allow_redirects=False)
+open(sDeathFile,'wb').write(r.content)
 
 #Use cofirmed cases as a template to determine size of arrays
 csvData = csv.reader(open(sConfirmFile,"r"))
@@ -237,11 +244,13 @@ UlyFile.write(sOutLine)
 
 iLine=1
 iCountryID = 0
+iDaysReport = 90
 for iCountry in range(iNumCountries):
     if saCountry[iCountry] == "Korea, South":
         saCountry[iCountry] = "South Korea"
     if iaConfirmed[iCountry][iNumDays-1] >= iaWorst[24]:
-        for iDay in range(iNumDays):
+        for iDayIndex in range(iDaysReport):
+            iDay = iNumDays + iDayIndex - iDaysReport
             sOutLine=repr(iLine)+','+repr(iCountryID)+','+repr(iaDay[iDay])+','
             sOutLine += repr(iaConfirmed[iCountry][iDay])+','+repr(iaConfirmedDaily[iCountry][iDay])+','+repr(iaCasesCapita[iCountry][iDay])+','
             sOutLine += repr(iaDeaths[iCountry][iDay])+','+repr(iaDeathsDaily[iCountry][iDay])+','+repr(iaDeathsCapita[iCountry][iDay])+','
