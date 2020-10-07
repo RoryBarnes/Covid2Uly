@@ -12,7 +12,7 @@ import numpy as np
 import string as str
 import subprocess as subp
 import csv
-import re
+#import re
 import requests
 import pandas as pd
 
@@ -264,5 +264,6 @@ for iCountry in range(iNumCountries):
         #exit()
 
 # Copy file into US.csv
+UlyFile.close()
 cmd = "cp "+sOut+" global.csv"
 subp.call(cmd,shell=True)

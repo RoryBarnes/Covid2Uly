@@ -28,6 +28,10 @@ iDaysMay=31
 iDaysJune=30
 iDaysJuly=31
 iDaysAug=31
+iDaysSep=30
+iDaysOct=31
+iDaysNov=30
+iDaysDec=31
 
 # Return number of days, and date
 def fnDays(sDate):
@@ -53,6 +57,12 @@ def fnDays(sDate):
         iNumDays = iDay + iDaysApril + iDaysMay + iDaysJune + iDaysJuly + iDaysMarch + iDaysJan + iDaysFeb
     if iMonth == 9:
         iNumDays = iDay + iDaysApril + iDaysMay + iDaysJune + iDaysJuly + iDaysAug + iDaysMarch + iDaysJan + iDaysFeb
+    if iMonth == 10:
+        iNumDays = iDay + iDaysApril + iDaysMay + iDaysJune + iDaysJuly + iDaysAug + iDaysMarch + iDaysJan + iDaysFeb + iDaysSep
+    if iMonth == 11:
+        iNumDays = iDay + iDaysApril + iDaysMay + iDaysJune + iDaysJuly + iDaysAug + iDaysMarch + iDaysJan + iDaysFeb + iDaysSep + iDaysOct
+    if iMonth == 12:
+        iNumDays = iDay + iDaysApril + iDaysMay + iDaysJune + iDaysJuly + iDaysAug + iDaysMarch + iDaysJan + iDaysFeb + iDaysSep + iDaysOct + iDaysNov
 
     # First day still counts
     #print(repr(iDay),repr(iMonth),sDate)
@@ -529,6 +539,7 @@ for iState in range(iNumStates):
         iID += 1
 
 # Copy file into US.csv
+OutFile.close()
 cmd = "cp "+sOut+" US.csv"
 subp.call(cmd,shell=True)
 exit(0)
